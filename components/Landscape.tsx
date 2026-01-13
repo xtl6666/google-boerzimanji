@@ -26,8 +26,9 @@ const Landscape: React.FC<LandscapeProps> = ({
   const HEIGHT = 300;
   
   const SEGMENT_WIDTH = WIDTH / 8;
-  const BASE_GROUND = 220; 
-  const BIAS_SCALE = 15; 
+  
+  const BASE_GROUND = 160; 
+  const BIAS_SCALE = 20; 
 
   // --- PHYSICS STATE ---
   const balls = useRef(Array(14).fill(0).map((_, i) => ({
@@ -40,22 +41,11 @@ const Landscape: React.FC<LandscapeProps> = ({
     target: i % 2 === 0 ? 0 : 7 
   })));
 
-  // Effect: When switching to Night Mode, give balls a "Wake Up" kick
-  // FIX: Specifically kick them AWAY from the corners (0 and 7) towards the center.
-  // This solves the issue where balls get trapped in the triangular pockets at the edges.
   useEffect(() => {
     if (!isDay) {
         balls.current.forEach(ball => {
-            // Calculate distance from center (-200 to +200)
             const distFromCenter = ball.x - WIDTH / 2;
-            
-            // Vertical Jump (Stronger)
             ball.vy -= 12 + Math.random() * 8; 
-
-            // Horizontal Kick: 
-            // If on left (negative dist), kick right (positive vx).
-            // If on right (positive dist), kick left (negative vx).
-            // This forces them out of the "V" corners.
             const kickDirection = distFromCenter < 0 ? 1 : -1;
             ball.vx = kickDirection * (8 + Math.random() * 8);
         });
@@ -63,28 +53,57 @@ const Landscape: React.FC<LandscapeProps> = ({
   }, [isDay]);
 
   // Helper: Get Terrain Height
+  // CHANGED: Use a Trapezoidal/Plateau shape instead of global cosine smoothing.
+  // This visually isolates each index so changes in one don't look like changes in neighbors.
   const getGroundY = (x: number, currentBiases: number[]) => {
     const safeX = Math.max(0, Math.min(WIDTH - 0.1, x));
     
+    // Which bin are we in?
     const idx = Math.floor(safeX / SEGMENT_WIDTH);
-    const ratio = (safeX % SEGMENT_WIDTH) / SEGMENT_WIDTH;
-    
     const safeIdx = Math.max(0, Math.min(7, idx));
-    const nextIdx = Math.min(7, safeIdx + 1);
-
-    const h1 = BASE_GROUND + (currentBiases[safeIdx] * BIAS_SCALE);
-    const h2 = BASE_GROUND + (currentBiases[nextIdx] * BIAS_SCALE);
     
-    // Smooth Cosine Interpolation
-    const smooth = (1 - Math.cos(ratio * Math.PI)) / 2;
-    return h1 + (h2 - h1) * smooth;
+    // Position within the bin (0.0 to 1.0)
+    const localRatio = (safeX % SEGMENT_WIDTH) / SEGMENT_WIDTH;
+    
+    const currentHeight = BASE_GROUND + (currentBiases[safeIdx] * BIAS_SCALE);
+    
+    // EDGE BLENDING
+    // Only blend in the last 20% of the segment to the next neighbor
+    // This creates flat "buckets" with steep walls
+    const BLEND_ZONE = 0.25; 
+    
+    if (localRatio > (1 - BLEND_ZONE)) {
+        const nextIdx = Math.min(7, safeIdx + 1);
+        const nextHeight = BASE_GROUND + (currentBiases[nextIdx] * BIAS_SCALE);
+        
+        // Normalize ratio to 0..1 within the blend zone
+        const blendProgress = (localRatio - (1 - BLEND_ZONE)) / BLEND_ZONE;
+        
+        // Smoothstep for nice corners
+        const smooth = blendProgress * blendProgress * (3 - 2 * blendProgress);
+        
+        return currentHeight + (nextHeight - currentHeight) * smooth;
+    } else if (localRatio < BLEND_ZONE) {
+         // Blend from previous? No, the previous logic handles the right-side blend.
+         // However, to make it symmetric, we can rely on the fact that 
+         // getGroundY is continuous.
+         // BUT, for simple plateau logic, checking the right side is sufficient 
+         // as long as we iterate x continuously.
+         // Wait, if we are at the START of a cell, we might be in the blend zone of the PREVIOUS cell.
+         // But idx calculation handles that. 
+         // Let's stick to: Cell is mostly flat, blends to NEXT at the end.
+         return currentHeight;
+    }
+
+    return currentHeight;
   };
 
   // Helper: Slope Normal (Points UP)
   const getNormal = (x: number, currentBiases: number[]) => {
-      const hL = getGroundY(x - 5, currentBiases);
-      const hR = getGroundY(x + 5, currentBiases);
-      const angle = Math.atan2(hR - hL, 10); 
+      // Sample slightly wider for normal calculation to smooth out the sharp corners physically
+      const hL = getGroundY(x - 3, currentBiases);
+      const hR = getGroundY(x + 3, currentBiases);
+      const angle = Math.atan2(hR - hL, 6); 
       return { nx: Math.sin(angle), ny: -Math.cos(angle) };
   };
 
@@ -104,11 +123,21 @@ const Landscape: React.FC<LandscapeProps> = ({
       grad.addColorStop(1, isDay ? '#bfdbfe' : '#1e1b4b');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
+      
+      // Draw Neutral Line (Dotted)
+      ctx.beginPath();
+      ctx.strokeStyle = isDay ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
+      ctx.setLineDash([5, 5]);
+      ctx.moveTo(0, BASE_GROUND);
+      ctx.lineTo(WIDTH, BASE_GROUND);
+      ctx.stroke();
+      ctx.setLineDash([]);
 
       // 2. Terrain
       ctx.beginPath();
       ctx.moveTo(0, HEIGHT);
-      for (let x = 0; x <= WIDTH; x += 5) {
+      // Finer step for smoother curves
+      for (let x = 0; x <= WIDTH; x += 2) {
         if (x === 0) ctx.moveTo(x, getGroundY(x, biases));
         else ctx.lineTo(x, getGroundY(x, biases));
       }
@@ -152,24 +181,17 @@ const Landscape: React.FC<LandscapeProps> = ({
           ball.vy += GRAVITY;
 
           if (isDay) {
-              // Day Mode: Strong Guide to targets
               const targetIdx = ball.target;
               const targetX = targetIdx * SEGMENT_WIDTH + SEGMENT_WIDTH/2;
               const dx = targetX - ball.x;
-              
-              // Spring force
               ball.vx += dx * 0.04;
-              // Damping
               ball.vx *= 0.92;
           } else {
-              // Night Mode: Thermal Noise + Wall Repulsion
               if (Math.random() < 0.15) {
                   ball.vx += (Math.random() - 0.5) * temperature * 1.5;
                   ball.vy += (Math.random() - 0.5) * temperature;
               }
-
-              // WALL REPULSION (Anti-Corner Trap)
-              // If ball is too close to walls, gently push it towards center
+              // Wall Repulsion
               if (ball.x < 30) ball.vx += 0.3;
               if (ball.x > WIDTH - 30) ball.vx -= 0.3;
           }
@@ -237,21 +259,33 @@ const Landscape: React.FC<LandscapeProps> = ({
 
           // 5. ACTION ICONS
           if (learningStep > 0) {
-              if (ball.y + ball.radius >= groundY - 10) {
+              // Only show action icon if ball interacts with ground
+              if (ball.y + ball.radius >= groundY - 20) {
                   const binIdx = Math.floor(ball.x / SEGMENT_WIDTH);
-                  let icon = "";
+                  const safeBinIdx = Math.max(0, Math.min(7, binIdx));
+                  
+                  // SYNC ICON WITH APP LOGIC
+                  // Day Mode: Always allow Digging on targets
+                  // Night Mode: Show Brick (Fill) whenever a ball is physically here.
+                  // We do NOT check biases anymore, because the user can fill ANYWHERE a ball exists.
+                  
+                  let showIcon = false;
                   if (isDay) {
-                      if (binIdx === 0 || binIdx === 7) icon = "🔨";
+                      if (rowState[safeBinIdx] === 1) { // Normal day logic
+                           if (binIdx === 0 || binIdx === 7) showIcon = true;
+                      }
                   } else {
-                      // Night Mode Icon Logic
-                      // If ball is in 0 or 7 (Correct), use specific icon? 
-                      // For now, keep generic brick.
-                      icon = "🧱";
+                      // Night Mode:
+                      // If the physics ball is here, we show the icon.
+                      // Logic in App.tsx will handle the rest (Force 1 for pits, probabilistic for mountains)
+                      showIcon = true;
                   }
-                  if (icon) {
+
+                  if (showIcon) {
+                      const icon = isDay ? "🔨" : "🧱";
                       ctx.font = "24px sans-serif";
                       ctx.textAlign = "center";
-                      ctx.fillText(icon, ball.x, ball.y - 20);
+                      ctx.fillText(icon, ball.x, ball.y - 25);
                   }
               }
           }
@@ -267,7 +301,7 @@ const Landscape: React.FC<LandscapeProps> = ({
 
     render();
     return () => cancelAnimationFrame(requestRef.current);
-  }, [biases, isDay, temperature, learningStep]);
+  }, [biases, rowState, isDay, temperature, learningStep]);
 
   return (
     <div className="relative w-full h-full select-none rounded-xl overflow-hidden bg-slate-900 border-2 border-slate-600 shadow-2xl">

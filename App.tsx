@@ -17,11 +17,12 @@ import {
 import PixelGrid from './components/PixelGrid';
 import Landscape from './components/Landscape';
 import Tutorial from './components/Tutorial';
+import Applications from './components/Applications';
 import HelpTooltip from './components/HelpTooltip';
-import { Sun, Moon, RotateCcw, BookOpen, Zap, Thermometer, Check, AlertCircle, RefreshCw, Activity, Waves } from 'lucide-react';
+import { Sun, Moon, RotateCcw, BookOpen, Zap, Thermometer, Check, AlertCircle, RefreshCw, Activity, Waves, Lightbulb, ArrowRight } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'tutorial' | 'lab'>('tutorial');
+  const [activeTab, setActiveTab] = useState<'tutorial' | 'lab' | 'applications'>('tutorial');
   const [network, setNetwork] = useState(initNetwork());
   const [isDay, setIsDay] = useState(true); 
   const [temp, setTemp] = useState(2.5);
@@ -146,8 +147,10 @@ const App: React.FC = () => {
         }
     }
 
+    const effectiveState = [...network.state];
+
     const result = learn(
-      network.state, 
+      effectiveState, 
       network.weights, 
       network.biases, 
       rate, 
@@ -261,6 +264,7 @@ const App: React.FC = () => {
       { id: 7, text: "🔄 7. 见证奇迹：切回晚上，先高温乱跳，再降温。球应该自动滚进最左(0)和最右(7)的坑。", done: false }
   ];
 
+  // --- RENDER PAGE 1: TUTORIAL ---
   if (activeTab === 'tutorial') {
     return (
       <div className="min-h-screen bg-slate-50">
@@ -280,6 +284,35 @@ const App: React.FC = () => {
     );
   }
 
+  // --- RENDER PAGE 3: APPLICATIONS ---
+  if (activeTab === 'applications') {
+      return (
+        <div className="min-h-screen bg-slate-50">
+            <div className="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+                <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    🐱 猫狗学习记 <span className="text-slate-400 font-normal hidden sm:inline">| 玻尔兹曼机</span>
+                </h1>
+                <div className="flex gap-2">
+                    <button 
+                        onClick={() => setActiveTab('tutorial')}
+                        className="text-sm font-bold px-4 py-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                    >
+                        教程
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('lab')}
+                        className="text-sm font-bold px-4 py-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                    >
+                        实验室
+                    </button>
+                </div>
+            </div>
+            <Applications onBack={() => setActiveTab('lab')} />
+        </div>
+      );
+  }
+
+  // --- RENDER PAGE 2: LAB ---
   return (
     <div className={`min-h-screen transition-colors duration-700 ${isDay ? COLOR_DAY_BG : COLOR_NIGHT_BG} font-sans pb-10 overflow-hidden flex flex-col`}>
       
@@ -294,7 +327,13 @@ const App: React.FC = () => {
           </button>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-bold ${isDay ? 'bg-blue-100 text-blue-700' : 'bg-indigo-900 text-indigo-300'}`}>
+            <button 
+                onClick={() => setActiveTab('applications')}
+                className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full font-bold transition ${isDay ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' : 'bg-purple-900 text-purple-200 hover:bg-purple-800'}`}
+            >
+                <Lightbulb size={14}/> 现实应用 & 启示
+            </button>
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-bold hidden sm:flex ${isDay ? 'bg-blue-100 text-blue-700' : 'bg-indigo-900 text-indigo-300'}`}>
                 <span>Epoch: {epoch}</span>
             </div>
             <button onClick={handleReset} className={`p-2 rounded-full transition ${isDay ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-700 text-slate-300'}`} title="重置实验">
@@ -330,12 +369,29 @@ const App: React.FC = () => {
                     ))}
                 </div>
                 {guideMessage && (
-                    <div className="mt-4 p-3 bg-yellow-50 text-yellow-800 border border-yellow-200 text-xs rounded-lg flex gap-2 items-start animate-pulse shadow-sm z-50 relative">
-                        {guideStep === 7 && successStableCount > STABILITY_THRESHOLD
-                            ? <Activity size={16} className="mt-0.5 shrink-0 text-green-600"/> 
-                            : <AlertCircle size={16} className="mt-0.5 shrink-0 text-yellow-600"/>
-                        }
-                        <span className="whitespace-pre-wrap font-medium leading-tight">{guideMessage}</span>
+                    <div className={`mt-4 p-3 border text-xs rounded-lg flex flex-col gap-2 shadow-sm z-50 relative transition-all ${
+                        guideStep === 7 && successStableCount > STABILITY_THRESHOLD 
+                        ? 'bg-green-50 text-green-900 border-green-200' 
+                        : 'bg-yellow-50 text-yellow-800 border-yellow-200 animate-pulse'
+                    }`}>
+                        <div className="flex gap-2 items-start">
+                             {guideStep === 7 && successStableCount > STABILITY_THRESHOLD
+                                ? <Activity size={16} className="mt-0.5 shrink-0 text-green-600"/> 
+                                : <AlertCircle size={16} className="mt-0.5 shrink-0 text-yellow-600"/>
+                            }
+                            <span className="whitespace-pre-wrap font-medium leading-tight">{guideMessage}</span>
+                        </div>
+                        
+                        {/* SUCCESS ACTION BUTTON */}
+                        {guideStep === 7 && successStableCount > STABILITY_THRESHOLD && (
+                            <button 
+                                onClick={() => setActiveTab('applications')}
+                                className="mt-1 w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded-md shadow-sm font-bold flex items-center justify-center gap-2 transition-transform active:scale-95 animate-bounce"
+                            >
+                                <span>前往下一章：启示</span>
+                                <ArrowRight size={14}/>
+                            </button>
+                        )}
                     </div>
                 )}
             </div>

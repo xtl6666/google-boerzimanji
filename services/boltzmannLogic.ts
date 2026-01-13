@@ -8,23 +8,21 @@ export const initNetwork = (): { weights: number[][], biases: number[], state: n
   // Randomize initial state
   const state: number[] = Array(TOTAL_UNITS).fill(0).map(() => Math.random() > 0.5 ? 1 : 0);
 
-  // Initialize weights with variance
+  // Initialize weights 
+  // CHANGED: Set to 0 to prevent cross-talk in tutorial. 
+  // Previous random weights caused the "Trap" (idx 3) to accidentally pull idx 2 active, causing it to rise when filling.
   for (let i = 0; i < TOTAL_UNITS; i++) {
     for (let j = i + 1; j < TOTAL_UNITS; j++) {
-      const w = (Math.random() - 0.5) * 0.1; 
-      weights[i][j] = w;
-      weights[j][i] = w;
+      weights[i][j] = 0;
+      weights[j][i] = 0;
     }
-    biases[i] = (Math.random() - 0.5) * 1.0; 
+    biases[i] = (Math.random() - 0.5) * 0.5; // Reduced noise in biases too
   }
 
   // --- CRITICAL TEACHING MECHANIC ---
   // Create a deep "Trap" (False Memory) in the middle (indices 3 and 4).
-  // This ensures that when the user switches to Night Mode, balls WILL fall here.
-  // This forces the user to use "Fill" to remove this hallucination.
-  // Bias = 6.0 is very deep (user digs add ~1.0 per click).
-  biases[3] = 6.0;
-  biases[4] = 6.0;
+  biases[3] = 5.0;
+  biases[4] = 5.0;
 
   return { weights, biases, state };
 };
@@ -75,8 +73,8 @@ export const learn = (
   const newWeights = weights.map(row => [...row]);
   const newBiases = [...biases];
   
-  // High learning rate for visual demonstration
-  const biasRate = rate * 5.0; 
+  // INCREASED RATES FOR BETTER VISUAL FEEDBACK
+  const biasRate = rate * 8.0; 
   const weightRate = rate * 0.1;
 
   for (let i = 0; i < TOTAL_UNITS; i++) {
@@ -96,7 +94,7 @@ export const learn = (
   }
   
   // Clamp values
-  const clamp = (x: number) => Math.max(-25, Math.min(25, x));
+  const clamp = (x: number) => Math.max(-12, Math.min(12, x));
   
   return {
     weights: newWeights.map(row => row.map(clamp)),
