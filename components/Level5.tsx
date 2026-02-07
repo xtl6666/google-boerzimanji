@@ -118,7 +118,7 @@ const CompletionModal = ({ epoch, accuracy, onNext, onStay }: { epoch: number, a
                 梦境相似度达到 <strong>{(accuracy*100).toFixed(0)}%</strong>。
             </p>
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-left mb-6 text-sm space-y-2">
-                <div className="flex gap-2 items-center text-slate-700"><CheckCircle size={14} className="text-emerald-500"/> <span>掌握了 H -> V 的生成规则</span></div>
+                <div className="flex gap-2 items-center text-slate-700"><CheckCircle size={14} className="text-emerald-500"/> <span>掌握了 H &rarr; V 的生成规则</span></div>
                 <div className="flex gap-2 items-center text-slate-700"><CheckCircle size={14} className="text-emerald-500"/> <span>权重已雕刻出能量谷底</span></div>
             </div>
             <div className="flex flex-col gap-3">
