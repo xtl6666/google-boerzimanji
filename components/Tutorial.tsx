@@ -244,8 +244,8 @@ const Tutorial: React.FC<TutorialProps> = ({ onStart }) => {
                                 Δw = η(⟨v<sub>i</sub>v<sub>j</sub>⟩<sub>data</sub> - ⟨v<sub>i</sub>v<sub>j</sub>⟩<sub>model</sub>)
                              </p>
                              <p className="text-sm text-slate-700">
-                                 <strong>前一项 (挖):</strong> 看到数据里 i,j 同时亮 &rarr; 拉近关系。<br/>
-                                 <strong>后一项 (填):</strong> 看到模型自己瞎猜 i,j 同时亮 &rarr; 疏远关系。
+                                 <strong>前一项 (挖):</strong> 看到数据里 i,j 同时亮 -> 拉近关系。<br/>
+                                 <strong>后一项 (填):</strong> 看到模型自己瞎猜 i,j 同时亮 -> 疏远关系。
                              </p>
                         </div>
                     </div>
