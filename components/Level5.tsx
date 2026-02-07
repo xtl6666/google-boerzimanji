@@ -445,7 +445,7 @@ const Level5: React.FC<{
                                     <h3 className="font-bold text-sm text-blue-100">让梦境逼近现实</h3>
                                 </div>
                                 <p className="text-xs text-slate-300 leading-tight">
-                                    1. 点击【自动训练】，网络会循环：看猫(Pos) → 做梦(Neg) → 改权重(Update)。<br/>
+                                    1. 点击【自动训练】，网络会循环：看猫(Pos) &rarr 做梦(Neg) &rarr 改权重(Update)。<br/>
                                     2. <strong>悬停观察 H：</strong> 它们是特征探测器。训练后，某个 H 可能会专门负责“检测左耳”。<br/>
                                     3. 当相似度稳定在 90% 以上时，训练自动停止。
                                 </p>
