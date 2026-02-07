@@ -281,7 +281,7 @@ const Level3: React.FC<Level3Props> = ({
 
     // --- STEP 4 PIPELINE LOGIC ---
     
-    // 1. Compute P (Input AB -> P)
+    // 1. Compute P (Input AB → P)
     const handleStep4_Compute = () => {
         const x = calcNetInputH(valA, valB, wAH, wBH, bH);
         const p = sigmoid(x, temp);
@@ -289,7 +289,7 @@ const Level3: React.FC<Level3Props> = ({
         setPipelineStage(1);
     };
 
-    // 2. Sample H (P -> H)
+    // 2. Sample H (P → H)
     const handleStep4_Sample = () => {
         const h = sample(step4Data.pH);
         setStep4Data(prev => ({ ...prev, sampledH: h }));
@@ -297,7 +297,7 @@ const Level3: React.FC<Level3Props> = ({
         setPipelineStage(2);
     };
 
-    // 3. Reconstruct (H -> AB')
+    // 3. Reconstruct (H → AB')
     const handleStep4_Reconstruct = () => {
         const h = step4Data.sampledH;
         // Backwards pass using SAME weights
@@ -385,7 +385,7 @@ const Level3: React.FC<Level3Props> = ({
                 why: ["证明随机性是有规律可循的。", "Sigmoid 函数把'票数'变成了'概率'。"],
                 io: { in: ["票数 x"], out: ["概率 P"], next: "权重的作用" },
                 micro: ["计算 x = wA*A + wB*B", "P = sigmoid(x)", "采样 H"],
-                math: { title: "激活函数", desc: "P = 1/(1+e^-x)", example: ["x=0 (中立) -> P=0.5", "x>3 (强烈) -> P>0.95"] },
+                math: { title: "激活函数", desc: "P = 1/(1+e^-x)", example: ["x=0 (中立) → P=0.5", "x>3 (强烈) → P>0.95"] },
                 faq: [{q: "预设是什么意思?", a: "预设只是帮你把权重调到了特定值，方便你观察 x=0 和 x>0 的区别。"}],
                 debug: { check: "无法下一步?", fix: "必须完成两个预设的采样任务。" }
             };
@@ -394,7 +394,7 @@ const Level3: React.FC<Level3Props> = ({
                 why: ["这模拟了'学习'的过程：学习就是调整 w。", "如果 w=0，A 就算喊破喉咙 H 也听不见。"],
                 io: { in: ["调整 w"], out: ["变化的概率"], next: "重建" },
                 micro: ["手动拖动 w 滑块", "观察 P 的变化", "采样验证"],
-                math: { title: "加权求和", desc: "x = wA*sA + wB*sB", example: ["wA=3, A=1 -> 贡献+3分"] },
+                math: { title: "加权求和", desc: "x = wA*sA + wB*sB", example: ["wA=3, A=1 → 贡献+3分"] },
                 faq: [{q: "为什么要 A=1 B=0?", a: "为了测试单边影响。如果两个都亮，很难分清是谁起的作用。"}],
                 debug: { check: "H 没反应?", fix: "确保 A 是 1，然后把 w_AH 拖大。" }
             };
@@ -402,7 +402,7 @@ const Level3: React.FC<Level3Props> = ({
                 tldr: "如果 H 能把 A 和 B 还原出来，说明 H 确实'听懂'了 A 和 B 的意思。",
                 why: ["验证 H 是否有效存储了信息。", "这是'生成模型'的基础：不仅能看，还能造。"],
                 io: { in: ["H 的状态"], out: ["重建的 A' B'"], next: "下一关" },
-                micro: ["Input -> H", "H -> Reconstruct Output", "对比 Input 和 Output"],
+                micro: ["Input → H", "H → Reconstruct Output", "对比 Input 和 Output"],
                 math: { title: "双向传播", desc: "P(v|h) 使用同样的 w", example: ["x_vis = w * s_h"] },
                 faq: [{q: "重建率低怎么办?", a: "说明权重设置得不好，或者采样次数太少有误差。多跑几次试试。"}],
                 debug: { check: "重建率一直 0?", fix: "可能是权重太小。试着把 w 调大，让信号传过去。" }

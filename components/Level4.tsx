@@ -267,7 +267,7 @@ const Level4: React.FC<{ onComplete: () => void, onPrevLevel: () => void, canPre
         const LR = 0.8; // High learning rate for demo
         let totalError = 0;
 
-        // V1->H
+        // V1→H
         for(let i=0; i<4; i++) for(let j=0; j<2; j++) {
             const pos = posStats.co_v1h[i][j] / Math.max(1, posStats.count);
             const neg = negStats.co_v1h[i][j] / Math.max(1, negStats.count);
@@ -276,7 +276,7 @@ const Level4: React.FC<{ onComplete: () => void, onPrevLevel: () => void, canPre
             if (Math.abs(delta) > 0.01) changes.push({ name: `V1[${i}]-H[${j}]`, before: wV1H[i][j], after: wV1H[i][j]+delta, delta });
             newWV1H[i][j] += delta;
         }
-        // H->V2
+        // H→V2
         for(let j=0; j<2; j++) for(let k=0; k<4; k++) {
             const pos = posStats.co_hv2[j][k] / Math.max(1, posStats.count);
             const neg = negStats.co_hv2[j][k] / Math.max(1, negStats.count);
@@ -328,7 +328,7 @@ const Level4: React.FC<{ onComplete: () => void, onPrevLevel: () => void, canPre
         // ... (Keep existing rescue content logic)
         // Simplified for this patch to focus on structure
         return { 
-            tldr: "遵循：选样本 -> 正相统计 -> 负相统计 -> 更新权重 的循环。", 
+            tldr: "遵循：选样本 → 正相统计 → 负相统计 → 更新权重 的循环。", 
             why: [], io: {in:[],out:[],next:""}, micro: [], math: {title:"",desc:"",example:[]}, faq: [], debug: {check:"",fix:""} 
         };
     };
@@ -560,7 +560,7 @@ const Level4: React.FC<{ onComplete: () => void, onPrevLevel: () => void, canPre
                         </div>
                         <div className="flex justify-around items-center">
                             <div className="flex flex-col items-center">
-                                <div className="text-[9px] text-slate-400 mb-1">V1 -> H</div>
+                                <div className="text-[9px] text-slate-400 mb-1">V1 → H</div>
                                 <div className="grid grid-cols-2 gap-1">
                                     {wV1H.flat().map((w, i) => (
                                         <div key={i} className="w-4 h-4 rounded-[2px]" style={{ backgroundColor: w>0 ? `rgba(59,130,246,${Math.min(1,Math.abs(w)*2)})` : `rgba(239,68,68,${Math.min(1,Math.abs(w)*2)})` }}></div>
@@ -569,7 +569,7 @@ const Level4: React.FC<{ onComplete: () => void, onPrevLevel: () => void, canPre
                             </div>
                             <ArrowRight size={16} className="text-slate-300"/>
                             <div className="flex flex-col items-center">
-                                <div className="text-[9px] text-slate-400 mb-1">H -> V2</div>
+                                <div className="text-[9px] text-slate-400 mb-1">H → V2</div>
                                 <div className="grid grid-cols-4 gap-1">
                                     {wHV2.flat().map((w, i) => (
                                         <div key={i} className="w-4 h-4 rounded-[2px]" style={{ backgroundColor: w>0 ? `rgba(59,130,246,${Math.min(1,Math.abs(w)*2)})` : `rgba(239,68,68,${Math.min(1,Math.abs(w)*2)})` }}></div>

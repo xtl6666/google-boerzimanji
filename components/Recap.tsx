@@ -33,7 +33,7 @@ const LEVEL_SUMMARIES = [
             "观察邻居 B 如何改变 A 的状态。"
         ],
         terms: ["binary", "probability", "sampling", "sigmoid"],
-        loopPhase: "Binary State -> Probability -> Sample",
+        loopPhase: "Binary State → Probability → Sample",
         outcome: "学会了如何根据输入 x 计算概率 P，并掷硬币决定状态 s。",
         nextUse: "这是所有神经元每次更新时都在做的微观动作。",
         confusion: [
@@ -57,7 +57,7 @@ const LEVEL_SUMMARIES = [
             "寻找能量最低的‘最舒适状态’。"
         ],
         terms: ["energy", "weight", "landscape"],
-        loopPhase: "Configuration -> Energy E",
+        loopPhase: "Configuration → Energy E",
         outcome: "建立了‘训练就是挖坑’的直觉。w 决定了哪里是坑。",
         nextUse: "为后面的采样提供动力学解释（为什么要往坑里跳）。",
         confusion: [
@@ -81,7 +81,7 @@ const LEVEL_SUMMARIES = [
             "执行‘模拟退火’过程。"
         ],
         terms: ["bias", "temperature", "local_minima", "annealing", "barrier"],
-        loopPhase: "Energy -> Probability (via Temp)",
+        loopPhase: "Energy → Probability (via Temp)",
         outcome: "理解了 Bias 是‘自带倾向’，T 是‘随机程度’。",
         nextUse: "Sampling 过程中必须有 T 参与，否则系统动不起来。",
         confusion: [
@@ -105,7 +105,7 @@ const LEVEL_SUMMARIES = [
             "运行‘往返重建’流水线。"
         ],
         terms: ["hidden_unit", "visible_units", "net_input", "reconstruct"],
-        loopPhase: "V -> H (Inference) & H -> V (Generation)",
+        loopPhase: "V → H (Inference) & H → V (Generation)",
         outcome: "明白了网络不仅有输入输出，还有‘脑补’的中间层。",
         nextUse: "Level 4/5 的核心结构，所有的学习都发生在 V-H 连接上。",
         confusion: [
@@ -129,7 +129,7 @@ const LEVEL_SUMMARIES = [
             "点击‘执行更新’修改权重。"
         ],
         terms: ["positive_phase", "negative_phase", "clamp", "delta_w", "co_occurrence"],
-        loopPhase: "Pos Stats -> Neg Stats -> Δw -> Update",
+        loopPhase: "Pos Stats → Neg Stats → Δw → Update",
         outcome: "第一次完整跑通了论文公式，理解了‘赫布学习’的修正版。",
         nextUse: "这是训练算法的原子操作，Level 5 只是把它重复了很多次。",
         confusion: [

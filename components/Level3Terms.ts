@@ -16,11 +16,11 @@ export const TERM_DEFS: Record<string, TermDefinition> = {
     "encoder_424": {
         title: "4-2-4 编码器 (Encoder)",
         subtitle: "信息压缩机",
-        what: ["一个经典的神经网络任务结构：4个输入 -> 2个隐藏 -> 4个输出。"],
+        what: ["一个经典的神经网络任务结构：4个输入 → 2个隐藏 → 4个输出。"],
         why: ["为了验证网络是否学会了‘抽象’。输入有4位信息，中间只有2位宽度的通道（瓶颈），网络必须学会把信息压缩编码，并在另一端无损还原。"],
         use: ["Level 4 的核心实验对象。网络需要学会用 2 位二进制（如00, 01, 10, 11）来代表 4 种不同的输入模式。"],
         where: ["界面正中央的网络拓扑图。"],
-        example: ["输入 '1000' -> 压缩为 '00' -> 还原为 '1000'。"],
+        example: ["输入 '1000' → 压缩为 '00' → 还原为 '1000'。"],
         misconceptions: ["这不是简单的信号传输，中间层必须学会‘编码规则’才能通过瓶颈。"]
     },
     "pos_stats": {
@@ -30,7 +30,7 @@ export const TERM_DEFS: Record<string, TermDefinition> = {
         why: ["这是学习的目标基准。我们希望网络记住：‘当看到这个数据时，内部应该有什么反应’。"],
         use: ["Step 2 点击‘运行正相’时收集。它是 Δw 公式中的被减数。"],
         where: ["左侧控制面板进度条 / 内部计算数据。"],
-        example: ["现实中 V1=1, H=1 同时出现了 40 次 -> <v1h>_pos ≈ 0.8。"],
+        example: ["现实中 V1=1, H=1 同时出现了 40 次 → <v1h>_pos ≈ 0.8。"],
         misconceptions: ["正相不代表‘正确’，它代表‘外部数据的真实分布’。"]
     },
     "neg_stats": {
@@ -40,7 +40,7 @@ export const TERM_DEFS: Record<string, TermDefinition> = {
         why: ["这是需要修正的基准。如果梦境里的共现频率和现实不一样，说明网络产生了幻觉或偏见。"],
         use: ["Step 3 点击‘运行负相’时收集。它是 Δw 公式中的减数。"],
         where: ["左侧控制面板进度条 / 内部计算数据。"],
-        example: ["梦里 V1=1, H=1 出现了 90 次 -> <v1h>_neg ≈ 1.8 (过高) -> 说明网络对这个连接过度兴奋，需要抑制。"],
+        example: ["梦里 V1=1, H=1 出现了 90 次 → <v1h>_neg ≈ 1.8 (过高) → 说明网络对这个连接过度兴奋，需要抑制。"],
         misconceptions: ["负相不是‘错误的’，它是‘模型当前的真实反应’。学习就是要让负相逼近正相。"]
     },
     "delta_w": {
@@ -50,7 +50,7 @@ export const TERM_DEFS: Record<string, TermDefinition> = {
         why: ["为了消除现实(Pos)与梦境(Neg)的差异。当差异为 0 时，学习完成（收敛）。"],
         use: ["Step 4 点击‘执行更新’时应用到权重矩阵上。"],
         where: ["右侧更新日志 (Updater) 面板。"],
-        example: ["Pos=0.8, Neg=0.3 -> Δw = 0.5 (现实多，梦里少 -> 加强连接)"],
+        example: ["Pos=0.8, Neg=0.3 → Δw = 0.5 (现实多，梦里少 → 加强连接)"],
         misconceptions: ["Δw 不是权重 w 本身，它是 w 的变化量（梯度）。"]
     },
     "free_phase": {
@@ -229,7 +229,7 @@ export const TERM_DEFS: Record<string, TermDefinition> = {
     },
     "round_trip": {
         title: "往返 (Round Trip)",
-        subtitle: "AB -> H -> AB'",
+        subtitle: "AB → H → AB'",
         what: ["信号传进去再传出来的过程。"],
         why: ["检查信息是否丢失。"],
         use: ["验证H的表示能力。"],
@@ -240,7 +240,7 @@ export const TERM_DEFS: Record<string, TermDefinition> = {
         subtitle: "脑补",
         what: ["根据隐藏层 H 的状态，反推可见层应该是什么。"],
         why: ["用来测试模型是否学会了。"],
-        use: ["在测试模式中，Clamp V1 -> H -> V2(Reconstruct)。"],
+        use: ["在测试模式中，Clamp V1 → H → V2(Reconstruct)。"],
         where: ["Step 5 的测试功能。"]
     },
     "ab_prime": {
@@ -296,7 +296,7 @@ export const TERM_DEFS: Record<string, TermDefinition> = {
         subtitle: "一起亮的频率",
         what: ["统计两个神经元 i 和 j 同时为 1 (或同号) 的频率。"],
         why: ["这是 Hebbian Learning 的核心：Fire together, wire together。"],
-        use: ["如果正相里常共现，负相里不共现 -> 说明连接太弱 -> 增强权重。\n如果正相不共现，负相常共现 -> 说明连接太强(幻觉) -> 减弱权重。"],
+        use: ["如果正相里常共现，负相里不共现 → 说明连接太弱 → 增强权重。\n如果正相不共现，负相常共现 → 说明连接太强(幻觉) → 减弱权重。"],
         where: ["柱状图的高度。"],
         formula: [{ label: "共现频率", latex: "⟨sᵢ·sⱼ⟩ = (1/N) · ∑ sᵢ·sⱼ", note: "N 是采样步数。" }]
     },
@@ -348,7 +348,7 @@ export const TERM_DEFS: Record<string, TermDefinition> = {
         subtitle: "Contrastive Divergence",
         what: ["Hinton 发明的快速训练算法。只做一次“梦”（负相采样 1 步）就进行更新。"],
         why: ["理论上应该让网络跑很久达到热平衡（无限次采样），但这太慢了。Hinton 发现，只要往“梦”的方向走一步，就能指明修正权重的方向。"],
-        use: ["本关的核心训练循环：Day -> Night(1 step) -> Update。"],
+        use: ["本关的核心训练循环：Day → Night(1 step) → Update。"],
         where: ["顶部的流水线条。"],
         formula: [{ label: "CD-k 更新", latex: "Δw ≈ ⟨v·h⟩₀ - ⟨v·h⟩ₖ", note: "k=1 时就是 CD-1。" }]
     }

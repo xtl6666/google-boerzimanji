@@ -118,7 +118,7 @@ const CompletionModal = ({ epoch, accuracy, onNext, onStay }: { epoch: number, a
                 梦境相似度达到 <strong>{(accuracy*100).toFixed(0)}%</strong>。
             </p>
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-left mb-6 text-sm space-y-2">
-                <div className="flex gap-2 items-center text-slate-700"><CheckCircle size={14} className="text-emerald-500"/> <span>掌握了 H &rarr; V 的生成规则</span></div>
+                <div className="flex gap-2 items-center text-slate-700"><CheckCircle size={14} className="text-emerald-500"/> <span>掌握了 H → V 的生成规则</span></div>
                 <div className="flex gap-2 items-center text-slate-700"><CheckCircle size={14} className="text-emerald-500"/> <span>权重已雕刻出能量谷底</span></div>
             </div>
             <div className="flex flex-col gap-3">
@@ -169,7 +169,7 @@ const Level5: React.FC<{
 
     // --- LOGIC: ONE STEP ---
     const runStep = () => {
-        // 1. Pos Phase (Clamp V -> Sample H)
+        // 1. Pos Phase (Clamp V → Sample H)
         const hProbs0 = rbm.biasH.map((b, j) => {
             let sum = b;
             for(let i=0; i<NUM_VISIBLE; i++) sum += PATTERN_CAT[i] * rbm.weights[i][j];
@@ -177,7 +177,7 @@ const Level5: React.FC<{
         });
         const hSample0 = sampleBernoulli(hProbs0);
 
-        // 2. Neg Phase (Recon V' -> Sample H')
+        // 2. Neg Phase (Recon V' → Sample H')
         const vProbs1 = rbm.biasV.map((b, i) => {
             let sum = b;
             for(let j=0; j<NUM_HIDDEN; j++) sum += hSample0[j] * rbm.weights[i][j];
@@ -261,7 +261,7 @@ const Level5: React.FC<{
         tldr: "H 是大脑的‘特征识别区’。每个圆圈代表一个特征（如‘有耳朵’）。",
         why: ["如果只记像素，那就是复读机。记住特征，才能举一反三。", "H 负责把具体的像素(V)抽象成概念。"],
         io: { in: ["训练"], out: ["学会的特征"], next: "收敛" },
-        micro: ["V -> H (解释)", "H -> V' (想象)", "对比 V 和 V'"],
+        micro: ["V → H (解释)", "H → V' (想象)", "对比 V 和 V'"],
         math: { title: "Gibbs Sampling", desc: "P(h|v) & P(v|h)", example: [] },
         faq: [
             {q: "H 到底是什么？", a: "试着把鼠标悬停在 H 圆圈上！你会看到左边的像素变色。变蓝的地方是 H 喜欢的（它检测的特征），变红的是它讨厌的。"},

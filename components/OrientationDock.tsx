@@ -126,7 +126,7 @@ const LOOP_NODES_DATA: Record<string, {
         id: 'update',
         label: 'Update Weights',
         icon: <RotateCcw size={16}/>,
-        what: '学习更新。根据 (现实统计 - 梦境统计) 的差值，修改权重。规则：现实里有、梦里没 -> 加强；梦里有、现实里没 -> 惩罚。',
+        what: '学习更新。根据 (现实统计 - 梦境统计) 的差值，修改权重。规则：现实里有、梦里没 → 加强；梦里有、现实里没 → 惩罚。',
         problem: '解决“修正误差”问题。这是算法的终极目的：通过微调权重，把梦境拉向现实，雕刻能量地形，让正确答案的坑越来越深。',
         io: { in: 'Pos统计, Neg统计', out: '新的权重 W' },
         missing: '如果不更新权重，网络永远不会进步，永远在犯同样的错。',
@@ -150,7 +150,7 @@ const OrientationDock: React.FC<OrientationDockProps> = ({ onComplete, onOpenMen
     const [storyPlaying, setStoryPlaying] = useState(false);
     const [storyIndex, setStoryIndex] = useState(-1);
     
-    // Tutorial Phase State: 'read_task' -> 'click_node' -> 'exploring'
+    // Tutorial Phase State: 'read_task' → 'click_node' → 'exploring'
     const [tutorialPhase, setTutorialPhase] = useState<'read_task' | 'click_node' | 'exploring'>('read_task');
 
     // Effects for Tutorial Sequencing

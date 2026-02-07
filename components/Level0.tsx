@@ -386,7 +386,7 @@ const ModuleProbabilityConverter = ({ onComplete, onRescue }: { onComplete: () =
     const [showFormula, setShowFormula] = useState(false);
     const [transitionTrigger, setTransitionTrigger] = useState<number | null>(null);
     
-    // Logic: x -> p
+    // Logic: x → p
     const p = 1 / (1 + Math.exp(-x));
     
     // Stats
@@ -592,7 +592,7 @@ const ModuleProbabilityConverter = ({ onComplete, onRescue }: { onComplete: () =
                 <GuideCard 
                     step={4} totalSteps={4}
                     title="完成：概率转换器"
-                    goal="理解流程：打分 -> 概率 -> 采样"
+                    goal="理解流程：打分 → 概率 → 采样"
                     action="点击屏幕中央的蓝色按钮"
                     why="在神经网络中，每个神经元都有一台这样的转换器。它把周围传来的信号算出总分 x，然后通过 Sigmoid 变成概率，最后决定自己是亮还是灭。"
                     onRescue={onRescue}
@@ -1038,7 +1038,7 @@ const Level0: React.FC<Level0Props> = ({
                 why: ["物理量(能量差)是连续的，需要转换成概率。", "Sigmoid 函数性质很好(可导、平滑)。"],
                 io: { in: ["分数 x"], out: ["概率 P"], next: "邻居影响" },
                 micro: ["改变 x", "P 随之改变", "采样验证"],
-                math: { title: "Sigmoid", desc: "P = 1 / (1 + e^-x)", example: ["x=0 -> P=0.5", "x=2 -> P≈0.88"] },
+                math: { title: "Sigmoid", desc: "P = 1 / (1 + e^-x)", example: ["x=0 → P=0.5", "x=2 → P≈0.88"] },
                 faq: [{q: "x 和 P 有什么区别?", a: "x 是因，P 是果。x 可以是负无穷到正无穷，P 只能是 0 到 1。"}],
                 debug: { check: "怎么过关?", fix: "完成 x=2 (想当1) 和 P 验证实验。" }
             };
@@ -1047,7 +1047,7 @@ const Level0: React.FC<Level0Props> = ({
                 why: ["这是神经网络连接的基础。", "通过这种方式，信息才能在网络中传播。"],
                 io: { in: ["邻居 sB", "权重 w"], out: ["我的状态 sA"], next: "下一关" },
                 micro: ["计算 x = -w * sB * sA (能量差)", "转化 P", "采样 sA"],
-                math: { title: "局部场", desc: "x_A = w * s_B", example: ["w=2, B=1 -> x=2 -> P高"] },
+                math: { title: "局部场", desc: "x_A = w * s_B", example: ["w=2, B=1 → x=2 → P高"] },
                 faq: [{q: "为什么 B 走了 P 就变 0.5?", a: "因为 B=0 时，w * B = 0，分数 x=0，Sigmoid(0)=0.5。"}] ,
                 debug: { check: "怎么完成?", fix: "把 B 设为 0，然后再次点击自动更新。" }
             };
