@@ -825,7 +825,7 @@ const Level3: React.FC<Level3Props> = ({
                                             onClick={() => { setWAH(2); setWBH(2); setBH(0); handleResetStats(); }}
                                             className={`px-2 py-1 text-xs rounded border ${step2StrongDone ? 'bg-emerald-100 border-emerald-200 text-emerald-700' : 'bg-white text-slate-600'}`}
                                         >
-                                            预设2: 强烈 (x>3)
+                                            预设2: 强烈 (x&gt;3)
                                         </button>
                                     </div>
                                 }
