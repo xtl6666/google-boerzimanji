@@ -308,10 +308,11 @@ const Level2: React.FC<Level2Props> = ({
         if (step === 2 && lowestStates.includes(3) && lowestStates.length === 1) setHasSeenValleyFlip(true);
         if (step === 2 && lowestStates.includes(0) && lowestStates.length === 1) setHasSeenValleyFlip(true); // Works both ways
 
-        if (step === 3 && temp >= 1.5 && uphillRate > 0.1 && currState === 3) setSeenHighTempSuccess(true);
+        // CHANGED: Relaxed condition. Temp >= 1.0 (was 1.5) and just checking if we reached state 3 or have some uphill flow
+        if (step === 3 && temp >= 1.0 && (currState === 3 || uphillRate > 0.01)) setSeenHighTempSuccess(true);
         
         if (step === 4 && !isRunning && !isAnnealing && stats[3] > 40) setAnnealSuccessCount(stats[3]);
-    }, [w, b, temp, step, isRunning, stats, barrierInfo.barrierHeight, currState]);
+    }, [w, b, temp, step, isRunning, stats, barrierInfo.barrierHeight, currState, uphillRate]);
 
 
     // --- VISUALIZATION HELPERS ---
@@ -794,7 +795,8 @@ const Level2: React.FC<Level2Props> = ({
                              <div className="mt-2 text-blue-300 font-bold">👉 点击任意格子，查看右侧的能量分解详情。</div>
                         </div>
                     }
-                    onNext={() => { setStep(3); setB(1); setTemp(0.2); setCurrState(0); }} // Force bias to 11 preference, low temp
+                      // CHANGED: Force a slightly lower W (2.5) to ensure barrier is crossable in Step 3
+                    onNext={() => { setStep(3); setB(1); setTemp(0.2); setCurrState(0); setW(2.5); }} 
                     canNext={hasSeenValleyFlip}
                     onRescue={() => setShowRescue(true)}
                 />
