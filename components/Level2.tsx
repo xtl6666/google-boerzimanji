@@ -291,9 +291,9 @@ const Level2: React.FC<Level2Props> = ({
                 setStepsLeft(p => p - 1);
                 
                 if (isAnnealing) {
-                    setTemp(t => Math.max(0.2, t * 0.98)); // Slower cooling: 0.95 -> 0.98
+                    setTemp(t => Math.max(0.2, t * 0.98)); // Cooling
                 }
-            }, 50); // Fast simulation
+            }, 20); // CHANGED: Faster simulation (20ms instead of 50ms)
         } else if (stepsLeft === 0) {
             setIsRunning(false);
             setIsAnnealing(false);
@@ -699,7 +699,7 @@ const Level2: React.FC<Level2Props> = ({
                         {step === 3 && (
                             <button 
                                 onClick={() => {
-                                    setStepsLeft(200);
+                                    setStepsLeft(100); // CHANGED: Reduced steps from 200 to 100 for speed
                                     setIsRunning(true);
                                     setUphillAccepts(0);
                                     setUphillAttempts(0);
@@ -709,7 +709,7 @@ const Level2: React.FC<Level2Props> = ({
                                 className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95 ${isRunning ? 'bg-slate-100 text-slate-400' : 'bg-purple-600 text-white hover:bg-purple-500'}`}
                             >
                                 {isRunning ? <Activity className="animate-spin"/> : <Play fill="currentColor"/>}
-                                {isRunning ? "运行中..." : "运行 200 步"}
+                                {isRunning ? "运行中..." : "运行 100 步"} 
                             </button>
                         )}
                         {step === 4 && (
