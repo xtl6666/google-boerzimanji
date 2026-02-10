@@ -291,7 +291,7 @@ const Level2: React.FC<Level2Props> = ({
                 setStepsLeft(p => p - 1);
                 
                 if (isAnnealing) {
-                    setTemp(t => Math.max(0.2, t * 0.95));
+                    setTemp(t => Math.max(0.2, t * 0.98));
                 }
             }, 50); // Fast simulation
         } else if (stepsLeft === 0) {
@@ -704,6 +704,7 @@ const Level2: React.FC<Level2Props> = ({
                                     setUphillAccepts(0);
                                     setUphillAttempts(0);
                                     setStats([0,0,0,0]);
+                                    setCurrState(0); // Force start at Trap (00)
                                 }}
                                 disabled={isRunning}
                                 className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95 ${isRunning ? 'bg-slate-100 text-slate-400' : 'bg-purple-600 text-white hover:bg-purple-500'}`}
@@ -828,7 +829,7 @@ const Level2: React.FC<Level2Props> = ({
                             </div>
                         </>
                     }
-                    onNext={() => { setStep(4); setCurrState(0); setStats([0,0,0,0]); }}
+                     onNext={() => { setStep(4); setCurrState(0); setStats([0,0,0,0]); setW(2.0); }} // Reduced W to 2.0 for easier annealing
                     canNext={seenHighTempSuccess}
                     onRescue={() => setShowRescue(true)}
                 />
