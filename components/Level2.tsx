@@ -52,15 +52,15 @@ const decomposeEnergy = (idx: number, w: number, b: number) => {
 };
 
 // Calculate Barrier: Max Energy on the path from Start to Goal minus Start Energy
-// Path 1: Start → Neighbor1 → Goal
-// Path 2: Start → Neighbor2 → Goal
+// Path 1: Start -> Neighbor1 -> Goal
+// Path 2: Start -> Neighbor2 -> Goal
 const calculateBarrier = (startIdx: number, goalIdx: number, w: number, b: number) => {
     const startE = calculateEnergy(startIdx, w, b);
     const goalE = calculateEnergy(goalIdx, w, b);
     
     // Neighbors (1-bit flip)
-    // 00(0) <→ 01(1), 10(2)
-    // 11(3) <→ 01(1), 10(2)
+    // 00(0) <-> 01(1), 10(2)
+    // 11(3) <-> 01(1), 10(2)
     // If start is 00 and goal is 11, neighbors are 01 and 10.
     
     let paths = [];
@@ -71,7 +71,7 @@ const calculateBarrier = (startIdx: number, goalIdx: number, w: number, b: numbe
     
     for (let nIdx of neighbors) {
         const neighborE = calculateEnergy(nIdx, w, b);
-        // Peak is the highest point on this specific path (Start → Neighbor → Goal)
+        // Peak is the highest point on this specific path (Start -> Neighbor -> Goal)
         // Usually the neighbor is the peak, but if Goal is higher, Goal is peak (though rare in optimization context)
         const peak = Math.max(startE, neighborE, goalE);
         const barrier = peak - startE;
@@ -291,7 +291,7 @@ const Level2: React.FC<Level2Props> = ({
                 setStepsLeft(p => p - 1);
                 
                 if (isAnnealing) {
-                    setTemp(t => Math.max(0.2, t * 0.98));
+                    setTemp(t => Math.max(0.2, t * 0.98)); // Slower cooling: 0.95 -> 0.98
                 }
             }, 50); // Fast simulation
         } else if (stepsLeft === 0) {
@@ -308,8 +308,8 @@ const Level2: React.FC<Level2Props> = ({
         if (step === 2 && lowestStates.includes(3) && lowestStates.length === 1) setHasSeenValleyFlip(true);
         if (step === 2 && lowestStates.includes(0) && lowestStates.length === 1) setHasSeenValleyFlip(true); // Works both ways
 
-        // CHANGED: Relaxed condition. Temp >= 1.0 (was 1.5) and just checking if we reached state 3 or have some uphill flow
-        if (step === 3 && temp >= 1.0 && (currState === 3 || uphillRate > 0.01)) setSeenHighTempSuccess(true);
+        // CHANGED: Success if reached state 3 (target) OR (temp is high AND acceptance rate is decent)
+        if (step === 3 && (currState === 3 || (temp >= 1.0 && uphillRate > 0.05))) setSeenHighTempSuccess(true);
         
         if (step === 4 && !isRunning && !isAnnealing && stats[3] > 40) setAnnealSuccessCount(stats[3]);
     }, [w, b, temp, step, isRunning, stats, barrierInfo.barrierHeight, currState, uphillRate]);
@@ -343,7 +343,7 @@ const Level2: React.FC<Level2Props> = ({
                 why: ["我们想让 11 成为唯一的最低点。", "Bias 打破了 00 和 11 的对称性。"],
                 io: { in: ["偏置 b"], out: ["唯一的谷底"], next: "温度 T" },
                 micro: ["b>0 奖励 1", "b<0 奖励 0", "拖动 b 观察谷底(绿色徽章)移动"],
-                math: { title: "偏置项", desc: "E_bias = -b * (sA+sB)", example: ["b=1, 11状态 → -1*(1+1)=-2 (能量降低)"] },
+                math: { title: "偏置项", desc: "E_bias = -b * (sA+sB)", example: ["b=1, 11状态 -> -1*(1+1)=-2 (能量降低)"] },
                 faq: [{q: "谷底徽章是什么?", a: "代表全图能量最低的状态。我们的目标是让系统停在这里。"}],
                 debug: { check: "没有反应?", fix: "拖动 b 滑块，直到绿色'谷底'标签出现在 00 或 11 上。" }
             };
@@ -352,7 +352,7 @@ const Level2: React.FC<Level2Props> = ({
                 why: ["如果 T 太低，遇到墙就回头，永远过不去。", "如果 T 够高，就有概率翻过去。"],
                 io: { in: ["温度 T"], out: ["翻墙概率"], next: "模拟退火" },
                 micro: ["计算 ΔE (墙高)", "计算 P = exp(-ΔE/T)", "掷硬币决定是否翻越"],
-                math: { title: "Metropolis 准则", desc: "P = exp(-ΔE/T)", example: ["ΔE=4, T=0.2 → P≈0", "ΔE=4, T=4 → P≈0.37"] },
+                math: { title: "Metropolis 准则", desc: "P = exp(-ΔE/T)", example: ["ΔE=4, T=0.2 -> P≈0", "ΔE=4, T=4 -> P≈0.37"] },
                 faq: [{q: "为什么 T 高了反而乱跳?", a: "因为能量低不再是绝对优势了，系统变得'不在乎'好坏，四处游荡。"}],
                 debug: { check: "小球不过去?", fix: "把 T 调到最大 (3.0)，然后点击运行。" }
             };
@@ -360,7 +360,7 @@ const Level2: React.FC<Level2Props> = ({
                 tldr: "模拟退火 = 先加热(翻出陷阱) + 后冷却(落入真理)。",
                 why: ["一直高温会乱跳，停不下来。", "一直低温会被困住，动不了。", "结合两者：先热后冷。"],
                 io: { in: ["初始 T=2.0"], out: ["最终状态 11"], next: "完成" },
-                micro: ["开始 T=2", "每一步 T = T * 0.95", "最后 T → 0"],
+                micro: ["开始 T=2", "每一步 T = T * 0.95", "最后 T -> 0"],
                 math: { title: "冷却计划", desc: "T_k = α * T_{k-1}", example: ["T0=2.0", "T1=1.9", "... T50=0.15"] },
                 faq: [{q: "为什么最后停住了?", a: "因为温度降到接近0，系统失去了向上跳的能力，只能待在谷底。"}],
                 debug: { check: "最后没停在 11?", fix: "多试几次，或者确保前面的 b 已经让 11 成为最低点。" }
@@ -704,7 +704,6 @@ const Level2: React.FC<Level2Props> = ({
                                     setUphillAccepts(0);
                                     setUphillAttempts(0);
                                     setStats([0,0,0,0]);
-                                    setCurrState(0); // Force start at Trap (00)
                                 }}
                                 disabled={isRunning}
                                 className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95 ${isRunning ? 'bg-slate-100 text-slate-400' : 'bg-purple-600 text-white hover:bg-purple-500'}`}
@@ -723,6 +722,7 @@ const Level2: React.FC<Level2Props> = ({
                                     setUphillAccepts(0);
                                     setUphillAttempts(0);
                                     setStats([0,0,0,0]);
+                                    setCurrState(0); // Force start at Trap (00)
                                 }}
                                 disabled={isRunning}
                                 className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95 ${isRunning ? 'bg-slate-100 text-slate-400' : 'bg-orange-600 text-white hover:bg-orange-500'}`}
@@ -796,8 +796,8 @@ const Level2: React.FC<Level2Props> = ({
                              <div className="mt-2 text-blue-300 font-bold">👉 点击任意格子，查看右侧的能量分解详情。</div>
                         </div>
                     }
-                      // CHANGED: Force a slightly lower W (2.5) to ensure barrier is crossable in Step 3
-                    onNext={() => { setStep(3); setB(1); setTemp(0.2); setCurrState(0); setW(2.5); }} 
+                    // CHANGED: Force W to 2.0 (was 2.5) to make Step 3 easier
+                    onNext={() => { setStep(3); setB(1); setTemp(0.2); setCurrState(0); setW(2.0); }} 
                     canNext={hasSeenValleyFlip}
                     onRescue={() => setShowRescue(true)}
                 />
@@ -829,7 +829,8 @@ const Level2: React.FC<Level2Props> = ({
                             </div>
                         </>
                     }
-                     onNext={() => { setStep(4); setCurrState(0); setStats([0,0,0,0]); setW(2.0); }} // Reduced W to 2.0 for easier annealing
+                    // Keep W=2.0 for Step 4 as well
+                    onNext={() => { setStep(4); setCurrState(0); setStats([0,0,0,0]); setW(2.0); }}
                     canNext={seenHighTempSuccess}
                     onRescue={() => setShowRescue(true)}
                 />
