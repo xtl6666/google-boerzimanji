@@ -196,11 +196,10 @@ const Recap: React.FC<RecapProps> = ({ onBack, onGoToLevel }) => {
         debug: { check: "太长不看？", fix: "只看每一张卡片的第一句‘一句话总结’即可。" }
     };
 
-    return (
-        <div className="min-h-screen bg-slate-50 flex flex-col pb-32 font-sans">
+          <div className="w-full h-full bg-slate-50 flex flex-col overflow-y-auto pb-32 font-sans relative">
             
             {/* --- HEADER --- */}
-            <div className="bg-white border-b border-slate-200 px-6 py-4 sticky top-0 z-40 shadow-sm flex justify-between items-center">
+            <div className="bg-white border-b border-slate-200 px-6 py-4 sticky top-0 z-40 shadow-sm flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-3">
                     <button onClick={onBack} className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
                         <ArrowLeft size={20}/>
@@ -214,7 +213,7 @@ const Recap: React.FC<RecapProps> = ({ onBack, onGoToLevel }) => {
                 </div>
             </div>
 
-            <div className="max-w-4xl mx-auto w-full p-4 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="max-w-4xl mx-auto w-full p-4 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 flex-grow">
 
                 {/* --- SECTION 1: THE BIG PICTURE --- */}
                 <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
