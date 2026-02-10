@@ -195,7 +195,7 @@ const Recap: React.FC<RecapProps> = ({ onBack, onGoToLevel }) => {
         faq: [{q: "一定要全背下来吗？", a: "不用。知道‘去哪找’比‘背下来’更重要。"}],
         debug: { check: "太长不看？", fix: "只看每一张卡片的第一句‘一句话总结’即可。" }
     };
-
+return(
           <div className="w-full h-full bg-slate-50 flex flex-col overflow-y-auto pb-32 font-sans relative">
             
             {/* --- HEADER --- */}
