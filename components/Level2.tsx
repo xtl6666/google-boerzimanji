@@ -286,20 +286,26 @@ const Level2: React.FC<Level2Props> = ({
 
     useEffect(() => {
         if (isRunning && stepsLeft > 0) {
+            // DYNAMIC SPEED:
+            // Step 3 (Stats): Fast (20ms) to reduce waiting time.
+            // Step 4 (Annealing): Slow (60ms) to visualize the jumping.
+            const tickRate = step === 4 ? 60 : 20;
+
             intervalRef.current = window.setInterval(() => {
                 runStep();
                 setStepsLeft(p => p - 1);
                 
                 if (isAnnealing) {
-                    setTemp(t => Math.max(0.2, t * 0.98)); // Cooling
+                    // Very slow cooling to ensure we see the "jumping around" phase
+                    setTemp(t => Math.max(0.2, t * 0.99)); 
                 }
-            }, 20); // CHANGED: Faster simulation (20ms instead of 50ms)
+            }, tickRate); 
         } else if (stepsLeft === 0) {
             setIsRunning(false);
             setIsAnnealing(false);
         }
         return () => clearInterval(intervalRef.current);
-    }, [isRunning, stepsLeft, currState, w, b, temp, isAnnealing]);
+    }, [isRunning, stepsLeft, currState, w, b, temp, isAnnealing, step]);
 
     // Validation Checkers
     useEffect(() => {
@@ -359,9 +365,9 @@ const Level2: React.FC<Level2Props> = ({
             case 4: return {
                 tldr: "模拟退火 = 先加热(翻出陷阱) + 后冷却(落入真理)。",
                 why: ["一直高温会乱跳，停不下来。", "一直低温会被困住，动不了。", "结合两者：先热后冷。"],
-                io: { in: ["初始 T=2.0"], out: ["最终状态 11"], next: "完成" },
-                micro: ["开始 T=2", "每一步 T = T * 0.95", "最后 T -> 0"],
-                math: { title: "冷却计划", desc: "T_k = α * T_{k-1}", example: ["T0=2.0", "T1=1.9", "... T50=0.15"] },
+                io: { in: ["初始 T=3.0"], out: ["最终状态 11"], next: "完成" },
+                micro: ["开始 T=3", "每一步 T = T * 0.99", "最后 T -> 0"],
+                math: { title: "冷却计划", desc: "T_k = α * T_{k-1}", example: ["T0=3.0", "T1=2.97", "... T300=0.15"] },
                 faq: [{q: "为什么最后停住了?", a: "因为温度降到接近0，系统失去了向上跳的能力，只能待在谷底。"}],
                 debug: { check: "最后没停在 11?", fix: "多试几次，或者确保前面的 b 已经让 11 成为最低点。" }
             };
@@ -715,8 +721,8 @@ const Level2: React.FC<Level2Props> = ({
                         {step === 4 && (
                             <button 
                                 onClick={() => {
-                                    setStepsLeft(200);
-                                    setTemp(2.0); // Start High
+                                    setStepsLeft(400); // INCREASED: Allow more time to watch
+                                    setTemp(3.0); // START HOT: Ensure jumping happens
                                     setIsRunning(true);
                                     setIsAnnealing(true);
                                     setUphillAccepts(0);
